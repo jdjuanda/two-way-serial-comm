@@ -6,6 +6,12 @@ pom.xml.versionsBackup
 pom.xml.next
 release.properties
 
+target/archive-tmp
+target/classes
+target/maven-archiver
+target/surefire
+target/test-classes
+
 bin/
 
 .classpath
