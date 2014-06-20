@@ -4,57 +4,70 @@ import gnu.io.*;
 
 import java.io.*;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Vector;
+
+import org.json.simple.JSONObject;
 
 public class TwoWaySerialComm {
 	
-    OutputStream output;
-    InputStream input;
+    private OutputStream output;
+    private InputStream input;
     
-    SerialReader serial;
-    CommPort commPort;
-    SerialPort serialPort;
+    private SerialReader serial;
+    private CommPort commPort;
+    private SerialPort serialPort;
     
 	public TwoWaySerialComm() {
 	}
+	public TwoWaySerialComm(String portName, Integer baudrate) {
+		this.connect(portName, baudrate);
+	}
 
-	public void connect(String portName, Integer baudrate) throws Exception {
-		
-		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
-		
-		if (portIdentifier.isCurrentlyOwned()) {
-			
-			System.out.println("Error: Port is currently in use");
-			
-		} else {
-			
-			this.commPort = portIdentifier.open(this.getClass().getName(),2000);
-			
-			if (commPort instanceof SerialPort) {
-				
-				this.serialPort = (SerialPort) commPort;
-				this.serialPort.setSerialPortParams(baudrate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-				
-				// IN
-				this.input = serialPort.getInputStream();
-				this.serial = new SerialReader(this.input);
-				
-				serialPort.addEventListener(this.serial);
-				serialPort.notifyOnDataAvailable(true);
-				// Thread.sleep(3000);
-				// out.write("yes".getBytes());
-				
-				// OUT
-				this.output = serialPort.getOutputStream();
-				// (new Thread(new SerialReader(in))).start();
-				(new Thread(new SerialWriter(this.output))).start();
-
+	/**
+	 * Connect to the port with specific baudrate.
+	 * @param portName
+	 * @param baudrate
+	 */
+	public void connect(String portName, Integer baudrate) {
+		try {
+			CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
+			if (portIdentifier.isCurrentlyOwned()) {
+				System.out.println("Error: Port is currently in use");
 			} else {
-				System.out.println("Error: Only serial ports are handled by this example.");
+				this.commPort = portIdentifier.open(this.getClass().getName(),2000);
+				if (commPort instanceof SerialPort) {
+					
+					this.serialPort = (SerialPort) commPort;
+					this.serialPort.setSerialPortParams(baudrate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+					
+					// IN
+					this.input = serialPort.getInputStream();
+					this.serial = new SerialReader(this.input);
+					
+					serialPort.addEventListener(this.serial);
+					serialPort.notifyOnDataAvailable(true);
+					
+					// OUT
+					this.output = serialPort.getOutputStream();
+					// (new Thread(new SerialReader(in))).start();
+					(new Thread(new SerialWriter(this.output))).start();
+					
+					Thread.sleep(5000);
+					this.output.write("yes".getBytes());
+	
+				} else {
+					System.out.println("Error: Only serial ports are handled by this example.");
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Disconnect the serial communication.
+	 */
 	public void disconnect() {
 		if (this.isConnected()) {
 			try {
@@ -70,6 +83,10 @@ public class TwoWaySerialComm {
 		}
 	}
 	
+	/**
+	 * Check if the device is connected.
+	 * @return
+	 */
 	public boolean isConnected(){
 		return (this.commPort!=null);
 	}
@@ -97,6 +114,10 @@ public class TwoWaySerialComm {
 		return arrayOfString;
 	}
 	
+	/**
+	 * Send JSON message to device.
+	 * @param str
+	 */
 	void write(String str) {
 		if (this.isConnected()) {
 			try {
@@ -107,16 +128,15 @@ public class TwoWaySerialComm {
 		}
 	}
 	
-	public String read() {
+	/**
+	 * Get all received JSON objects.
+	 * @return
+	 */
+	public HashMap<Long, JSONObject> read() {
 		if (this.isConnected()) {
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			return (this.serial.getMessage());
+			return this.serial.getMessages();
 		}
-		return "";
+		return new HashMap<Long, JSONObject>();
 	}
 	
 }
