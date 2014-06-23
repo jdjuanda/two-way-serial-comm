@@ -6,10 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 /**
  * Handles the input coming from the serial port. A new line character is
  * treated as the end of a block in this example.
@@ -18,13 +14,11 @@ public class SerialReader implements SerialPortEventListener {
 	
 	private InputStream input;
 	private byte[] buffer = new byte[1024];
-	private HashMap<Long, JSONObject> msgs;
-	private JSONParser parser;
+	private HashMap<Long, String> msgs;
 
 	public SerialReader(InputStream input) {
 		this.input = input;
-		this.msgs = new HashMap<Long, JSONObject>();
-		this.parser = new JSONParser();
+		this.msgs = new HashMap<Long, String>();
 	}
 	
 	/**
@@ -41,21 +35,10 @@ public class SerialReader implements SerialPortEventListener {
 				buffer[len++] = (byte) data;
 			}
 			synchronized (this){
-				boolean okay = true;
-				JSONObject val = new JSONObject();
-				String raw = new String(buffer, 0, len);
-				// System.out.println("raw json string: "+raw);
-				if(!raw.equals("")){
-					try {
-						val = (JSONObject) parser.parse(raw);
-					} catch (ParseException e) {
-						okay = false;
-						// e.printStackTrace();
-					}
-				}
-				if(okay){
-					this.msgs.put(System.currentTimeMillis(), val);
-				}
+				this.msgs.put(
+					System.currentTimeMillis(),
+					new String(buffer, 0, len)
+				);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -65,12 +48,12 @@ public class SerialReader implements SerialPortEventListener {
 	}
 
 	/**
-	 * Get all received JSON messages.
+	 * Get all received String messages.
 	 * @return
 	 */
-	public HashMap<Long, JSONObject> getMessages() {
+	public HashMap<Long, String> getMessages() {
 		synchronized (this){
-			HashMap<Long, JSONObject> result = new HashMap<Long, JSONObject>(this.msgs);
+			HashMap<Long, String> result = new HashMap<Long, String>(this.msgs);
 			this.msgs.clear();
 			return result;
 		}

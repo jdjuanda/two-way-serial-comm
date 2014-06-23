@@ -7,8 +7,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.json.simple.JSONObject;
-
 public class TwoWaySerialComm {
 	
     private OutputStream output;
@@ -132,11 +130,11 @@ public class TwoWaySerialComm {
 	 * Get all received JSON objects.
 	 * @return
 	 */
-	public HashMap<Long, JSONObject> read() {
+	public HashMap<Long, String> read() {
 		if (this.isConnected()) {
 			return this.serial.getMessages();
 		}
-		return new HashMap<Long, JSONObject>();
+		return new HashMap<Long, String>();
 	}
 	
 }
