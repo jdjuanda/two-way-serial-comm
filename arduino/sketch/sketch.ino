@@ -5,7 +5,7 @@ int bluetoothRx = 3;
 SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);
 
 #define LED_PIN 13
-bool blinkState = false;
+bool flag = false;
 
 // simple json builder, b/c aJson needs to much storage
 String buildKeyValueJson(String key, String value)
@@ -39,9 +39,9 @@ void loop()
   }
   if (content != "") {
     Serial.println(content);
-    blinkState = !blinkState;
+    flag = !flag;
   }
-  if(blinkState){
+  if(flag){
     digitalWrite(LED_PIN, HIGH);
   } else {
     digitalWrite(LED_PIN, LOW);
