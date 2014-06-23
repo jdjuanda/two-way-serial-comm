@@ -1,12 +1,13 @@
 #include <SoftwareSerial.h>
 
-int bluetoothTx = 2;
+int bluetoothTx = 4;
 int bluetoothRx = 3;
 SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);
 
 #define LED_PIN 13
 bool blinkState = false;
 
+// simple json builder, b/c aJson needs to much storage
 String buildKeyValueJson(String key, String value)
 {
   String result = "";
@@ -30,6 +31,20 @@ void setup()
 
 void loop()
 {
-  bluetooth.println(buildKeyValueJson("msg", "foobar"));
-  digitalWrite(LED_PIN, blinkState);  
+  bluetooth.println(buildKeyValueJson("msg", "foo"));
+ 
+  String content = ""; 
+  while(bluetooth.available() > 0) {
+    content.concat((char)bluetooth.read());
+  }
+  if (content != "") {
+    Serial.println(content);
+    blinkState = !blinkState;
+  }
+  if(blinkState){
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
+  
 }

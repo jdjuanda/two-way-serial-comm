@@ -31,6 +31,7 @@ public class Main extends PApplet implements PConstants {
 		background(240);
 		
 		if(com.isConnected()){
+			// reading messages
 			this.msgs = com.read();
 			if(!this.msgs.isEmpty()){
 				for(JSONObject json : this.msgs.values()){	
@@ -48,16 +49,22 @@ public class Main extends PApplet implements PConstants {
 	
 	public void keyReleased(){
 		switch(key){
-		case 'c':
+		case 'c': // connect
 			try {
 				com.connect(PORT, BAUDRATE);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			break;
-		case 'd':
+		case 'd': // disconnect
 			if(com.isConnected()){
 				com.disconnect();
+			}
+			break;
+		case 'w': // writing messages
+			if(com.isConnected()){
+				System.out.println("Sending ...");
+				com.write("bar");
 			}
 			break;
 		}

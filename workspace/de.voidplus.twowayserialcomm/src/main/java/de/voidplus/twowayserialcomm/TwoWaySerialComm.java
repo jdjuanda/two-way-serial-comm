@@ -118,7 +118,7 @@ public class TwoWaySerialComm {
 	 * Send JSON message to device.
 	 * @param str
 	 */
-	void write(String str) {
+	public void write(String str) {
 		if (this.isConnected()) {
 			try {
 				this.output.write(str.getBytes());
