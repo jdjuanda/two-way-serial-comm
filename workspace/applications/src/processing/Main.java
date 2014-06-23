@@ -2,8 +2,6 @@ package processing;
 
 import java.util.HashMap;
 
-import org.json.simple.JSONObject;
-
 import de.voidplus.twowayserialcomm.*;
 import processing.core.*;
 
@@ -16,7 +14,7 @@ public class Main extends PApplet implements PConstants {
 	public static final Integer BAUDRATE = 9600; // 115200
 	
 	public TwoWaySerialComm com;
-	public HashMap<Long, JSONObject> msgs;
+	public HashMap<Long, String> msgs;
 	
 	public void setup(){
 		this.initScreen();
@@ -24,7 +22,7 @@ public class Main extends PApplet implements PConstants {
 		smooth();
 		
 		com = new TwoWaySerialComm();
-		msgs = new HashMap<Long, JSONObject>();
+		msgs = new HashMap<Long, String>();
 	}
 
 	public void draw(){
@@ -34,8 +32,8 @@ public class Main extends PApplet implements PConstants {
 			// reading messages
 			this.msgs = com.read();
 			if(!this.msgs.isEmpty()){
-				for(JSONObject json : this.msgs.values()){	
-					System.out.println(json.get("msg"));
+				for(String str : this.msgs.values()){	
+					System.out.println(str);
 				}
 			}
 		}

@@ -14,8 +14,7 @@ Don't forget to add the [native RXTX libraries](https://github.com/voidplus/two-
 ## Dependencies
 
 - [pom.xml](https://raw.githubusercontent.com/voidplus/two-way-serial-comm/master/workspace/de.voidplus.twowayserialcomm/pom.xml)
-	- [json-simple v1.1.1](https://code.google.com/p/json-simple/)
-	- [RXTX v2.1-7](http://www.jcontrol.org/download/rxtx_en.html)
+	- [RXTX v2.1.7](http://www.jcontrol.org/download/rxtx_en.html)
 
 
 ## Usage
@@ -30,7 +29,7 @@ import de.voidplus.twowayserialcomm.*;
 // ...
 
 public TwoWaySerialComm com = new TwoWaySerialComm();
-public HashMap<Long, JSONObject> msgs = new HashMap<Long, JSONObject>();
+public HashMap<Long, String> msgs = new HashMap<Long, String>();
 ```
 
 Connect:
@@ -57,8 +56,8 @@ Read / Receive:
 if(com.isConnected()){
 	this.msgs = com.read();
 	if(!this.msgs.isEmpty()){
-		for(JSONObject json : this.msgs.values()){
-			System.out.println(json.get("msg"));
+		for(String str : this.msgs.values()){
+			System.out.println(str);
 		}
 	}
 }
@@ -108,7 +107,7 @@ void setup()
 
 void loop()
 {
-  bluetooth.println(buildKeyValueJson("msg", "foo"));
+  bluetooth.println("foo");
  
   String content = ""; 
   while(bluetooth.available() > 0) {
